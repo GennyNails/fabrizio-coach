@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mister Soccer</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root{
+      --text:#d7ffe6;
+      --muted:rgba(215,255,230,.75);
+      --card:rgba(10,18,14,.50);
+      --border:rgba(255,255,255,.14);
+      --green:#8dffb3;
+      --green2:#35d07f;
+      --danger:#ff6b6b;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+      --black:#050607;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      background: repeating-linear-gradient(90deg,#0b5f2a 0 70px,#0a5525 70px 140px);
+    }
+    body::after{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.18;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 0 90px, rgba(255,255,255,.55) 90px 92px, transparent 92px),
+        linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55)) 50% 50%/2px 100% no-repeat,
+        linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55)) 50% 5%/90% 2px no-repeat,
+        linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55)) 50% 95%/90% 2px no-repeat,
+        linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55)) 5% 50%/2px 90% no-repeat,
+        linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55)) 95% 50%/2px 90% no-repeat;
+    }
+
+    header{
+      position:sticky; top:0; z-index:20;
+      background: rgba(4,28,14,.72);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+    .head{
+      max-width: 980px;
+      margin:0 auto;
+      padding: 12px 14px 8px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .brand{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0;}
+    .brand h1{margin:0; font-size:20px; letter-spacing:.2px}
+    .brand .sub{font-size:12px; color:var(--muted)}
+    .pill{
+      font-size:12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.25);
+      white-space:nowrap;
+    }
+    .version{font-size:12px; opacity:.7; margin-right:8px;}
+
+    .tabs{
+      max-width: 980px;
+      margin:0 auto;
+      padding: 0 14px 12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .tabbtn{
+      flex: 1 1 120px;
+      max-width: 190px;
+      border:1px solid rgba(141,255,179,.35);
+      background: rgba(0,0,0,.35);
+      color: var(--green);
+      padding: 10px 12px;
+      border-radius: 16px;
+      cursor:pointer;
+      font-weight: 900;
+      box-shadow: 0 1px 0 rgba(255,255,255,.05) inset;
+    }
+    .tabbtn.active{
+      background: rgba(141,255,179,.2);
+      color:#07120a;
+      border-color: rgba(141,255,179,.8);
+      box-shadow: 0 0 0 3px rgba(141,255,179,.18) inset, var(--shadow);
+    }
+
+    main{
+      max-width: 980px;
+      margin:0 auto;
+      padding: 12px 14px 22px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+
+    .card{
+      width:100%;
+      border:1px solid var(--border);
+      background: var(--card);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size: 16px;
+      letter-spacing:.2px;
+      text-align:center;
+    }
+    .muted{color:var(--muted); font-size:12px}
+    .center{text-align:center}
+    .sp8{height:8px}
+
+    .grid{
+      width:100%;
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 12px;
+    }
+    @media (max-width: 900px){ .grid{ grid-template-columns: 1fr; } }
+
+    label{display:block; font-size:12px; color:var(--muted); margin: 10px 0 6px;}
+    input, select, textarea, button{ font:inherit; }
+    input, select, textarea{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(141,255,179,.35);
+      background: var(--black);
+      color: var(--green);
+      outline:none;
+    }
+    select option{ background: var(--black); color: var(--green); }
+    textarea{ min-height: 90px; resize: vertical; }
+
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap: 10px;}
+    @media (max-width: 700px){ .row{ grid-template-columns: 1fr; } }
+
+    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; justify-content:center;}
+    .btn{
+      border:1px solid rgba(141,255,179,.35);
+      background: rgba(0,0,0,.35);
+      color: var(--green);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 900;
+    }
+    .btn.primary{ background: rgba(141,255,179,.18); border-color: rgba(141,255,179,.8); }
+    .btn.danger{ border-color: rgba(255,107,107,.7); color:#ffd2d2; background: rgba(255,107,107,.14); }
+    .btn.small{ padding: 8px 10px; border-radius: 12px; font-size: 12px; }
+
+    table{ width:100%; border-collapse: collapse; overflow:hidden; border-radius: 14px; }
+    th, td{ padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,.10); text-align:left; vertical-align: middle; font-size: 13px; }
+    th{ font-size:12px; color: var(--muted); font-weight: 900; }
+    .right{text-align:right}
+
+    .badge{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(141,255,179,.35);
+      background: rgba(0,0,0,.28);
+      font-size: 12px;
+      white-space: nowrap;
+      color: var(--green);
+    }
+    .badge.ok{ border-color: rgba(141,255,179,.75); background: rgba(141,255,179,.14); color:#06110a; }
+    .badge.warn{ border-color: rgba(255,226,122,.55); background: rgba(255,226,122,.12); color:#201800; }
+
+    .list{ display:flex; flex-direction:column; gap:10px; }
+    .list-item{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+      padding:12px; border:1px solid rgba(255,255,255,.12); border-radius:18px; background: rgba(0,0,0,.26);
+    }
+    .title{ font-weight: 900; letter-spacing:.2px; }
+    .hidden{ display:none !important; }
+
+    /* COACH (spostato fuori header) */
+    .profile-row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;}
+    .team-logo{width:64px;height:64px;border-radius:999px;object-fit:cover;border:2px solid rgba(255,255,255,.18);box-shadow:0 10px 26px rgba(0,0,0,.35);cursor:pointer;flex:0 0 auto;}
+    .logo-upload{font-size:12px;cursor:pointer;color:var(--green);}
+    .mister-fields{display:flex;flex-direction:column;gap:8px;min-width:min(520px,100%);}
+
+    /* Presenze: select (testo visibile) */
+    .select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(160,255,200,.25);background:rgba(0,0,0,.65);color:var(--green);outline:none}
+
+    /* Tattiche */
+    .tactics-wrap{ display:grid; grid-template-columns: 1fr .75fr; gap:12px; }
+    @media (max-width: 900px){ .tactics-wrap{ grid-template-columns: 1fr; } }
+
+    canvas{
+      width: 100%;
+      height: auto;
+      max-width: 520px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: linear-gradient(90deg,#0b5f2a 0 70px,#0a5525 70px 140px);
+      box-shadow: var(--shadow);
+      touch-action: none;
+    }
+    .toolrow{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+    .toolrow .btn.active{ background: rgba(141,255,179,.18); border-color: rgba(141,255,179,.8); color:#06110a; }
+    .bench{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+
+    /* Modal giocatore */
+    .modal-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);z-index:9999;padding:18px;}
+    .modal-backdrop.show{display:flex;}
+    .modal{width:min(560px, 96vw);background:rgba(7,16,11,.92);border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.5);overflow:hidden;}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 14px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .modal-title{font-weight:800;letter-spacing:.3px;}
+    .modal-body{padding:14px;}
+  
+
+    /* --- UI più dolce --- */
+    :root{
+      --radius: 22px;
+      --radius-sm: 16px;
+    }
+    .card{ border-radius: var(--radius); }
+    .tabbtn{ border-radius: 18px; }
+    .btn{ border-radius: 18px; }
+    input, select, textarea{ border-radius: 16px; }
+    .list-item{ border-radius: 20px; }
+    .badge{ border-radius: 999px; }
+
+    /* Avatars / Foto */
+    img.avatar{
+      width:54px;height:54px;border-radius:50%;
+      object-fit:cover;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 6px 16px rgba(0,0,0,.25);
+      flex:0 0 auto;
+    }
+    img.avatar.clickable{ cursor:pointer; }
+    .photo-pick{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .player-photo{ width:52px;height:52px;border-radius:50%;object-fit:cover;
+      border:1px solid rgba(255,255,255,.18); box-shadow:0 6px 16px rgba(0,0,0,.2); background:rgba(0,0,0,.25);
+    }
+
+    /* Modal più leggibile su mobile */
+    .modal{ border-radius: 22px; }
+    .modal-body .profile{ display:flex; gap:14px; align-items:center; }
+    .modal-body .profile img{ width:96px; height:96px; border-radius: 20px; object-fit:cover; }
+    @media (max-width: 520px){
+      .modal{ width: min(92vw, 520px); }
+      .modal-body .profile{ align-items:flex-start; }
+      .modal-body .profile img{ width:120px; height:120px; border-radius: 22px; }
+    }
+
+
+/* Presenze matrix */
+.matrix-wrap{ overflow:auto; border:1px solid rgba(255,255,255,.10); border-radius:16px; background:rgba(255,255,255,.03); }
+.matrix{ border-collapse:separate; border-spacing:0; width:max-content; min-width:100%; }
+.matrix th,.matrix td{ padding:10px 10px; border-bottom:1px solid rgba(255,255,255,.08); border-right:1px solid rgba(255,255,255,.06); font-size:13px; }
+.matrix th{ position:sticky; top:0; background:rgba(12,14,20,.92); backdrop-filter: blur(8px); z-index:3; }
+.matrix .sticky-col{ position:sticky; left:0; background:rgba(12,14,20,.92); z-index:4; }
+.matrix th.sticky-col{ z-index:5; }
+.matrix td.center{ text-align:center; }
+.matrix input[type="checkbox"]{ width:18px; height:18px; accent-color: var(--green); }
+.matrix .daypill{ display:inline-flex; align-items:center; justify-content:center; padding:4px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.12); font-size:12px; }
+.matrix .wk{ opacity:.8; font-size:11px; display:block; margin-top:2px; }
+@media (max-width: 520px){
+  .matrix th,.matrix td{ padding:9px 8px; }
+  .matrix input[type="checkbox"]{ width:20px; height:20px; }
+}
+/* Print */
+@media print{
+  body{ background:#fff !important; color:#000 !important; }
+  header, nav, .tabs, .btn, .toolrow, .bench, .muted.center, .actions{ display:none !important; }
+  .card{ box-shadow:none !important; border:1px solid #ddd !important; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <div class="brand">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="version">Vers. 1.4</span>
+        <h1 style="margin:0;">Mister Soccer 🟡🔴</h1>
+      </div>
+      <div class="sub">Presenze • Rosa • Partite • Report • Tattiche</div>
+    </div>
+    <div class="pill" id="pillInfo">Rosa: 13</div>
+  </div>
+  <div class="tabs">
+    <button class="tabbtn active" data-tab="presenze">Presenze</button>
+    <button class="tabbtn" data-tab="rosa">Rosa</button>
+    <button class="tabbtn" data-tab="partite">Partite</button>
+    <button class="tabbtn" data-tab="report">Report</button>
+    <button class="tabbtn" data-tab="tattiche">Tattiche</button>
+  </div>
+</header>
+
+<main>
+  <!-- PRESENZE -->
+  <section id="tab-presenze" class="card">
+    <h2>Presenze</h2>
+
+    <div class="card" style="box-shadow:none; margin-bottom:12px;">
+      <h2>COACH</h2>
+      <div class="profile-row">
+        <label class="logo-upload">Carica il tuo logo
+          <input type="file" id="logoInput" accept="image/*" hidden>
+        </label>
+        <img id="teamLogo" src="placeholder.png" class="team-logo" alt="Logo squadra">
+        <div class="mister-fields">
+          <input id="misterName" placeholder="Nome e Cognome Mister">
+          <select id="categoria">
+            <option value="">Categoria</option>
+            <option>Primi Calci</option><option>Piccoli Amici</option><option>Pulcini 1° anno</option><option>Pulcini 2° anno</option><option>Pulcini Misti</option><option>Esordienti 1° Anno</option><option>Esordienti 2° Anno</option><option>Esordienti Misti</option><option>Giovanissimi (U14)</option><option>Giovanissimi (U15)</option><option>Allievi</option>
+          </select>
+          <p class="muted" style="margin:0;">Il profilo resta salvato sul telefono.</p>
+        </div>
+      </div>
+    </div>
+
+        <p class="muted center" style="margin:0 0 10px;">
+      Seleziona un mese e spunta le presenze nei giorni di allenamento (Lun / Mer / Gio). Nessuna data da aggiungere.
+    </p>
+
+    <div class="card" style="box-shadow:none;">
+      <div class="row">
+        <div>
+          <label for="monthPick">Mese</label>
+          <input id="monthPick" type="month" />
+        </div>
+        <div style="width:190px;">
+          <label>&nbsp;</label>
+          <button class="btn" id="saveAttendanceBtn" style="width:100%;">Salva</button>
+        </div>
+      </div>
+      <div class="muted" id="monthHint" style="margin-top:8px;">Totale allenamenti nel mese: <b id="monthTotalBadge">0</b></div>
+
+      <div class="sp8"></div>
+      <div class="matrix-wrap" id="attendanceMatrixWrap"></div>
+
+      <p class="muted" style="margin:10px 0 0;">
+        Suggerimento: la tabella scorre in orizzontale. Su mobile puoi pinch/zoom.
+      </p>
+    </div>
+
+    <div class="sp8"></div>
+    <div class="card" style="box-shadow:none;">
+      <h2>Percentuali (mese)</h2>
+      <p class="muted center" style="margin:0 0 10px;">Calcolate su tutte le giornate Lun/Mer/Gio del mese.</p>
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Giocatore</th>
+              <th class="right">Pres.</th>
+              <th class="right">Ass.</th>
+              <th class="right">Tot.</th>
+              <th class="right">%</th>
+            </tr>
+          </thead>
+          <tbody id="percentTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ROSA -->
+  <section id="tab-rosa" class="card hidden">
+    <h2>Rosa</h2>
+    <p class="muted center" style="margin:0 0 10px;">Ruolo tramite menu a tendina (non campo libero).</p>
+
+    <div class="row">
+      <div>
+        <label for="newPlayerName">Nuovo giocatore</label>
+        <input id="newPlayerName" type="text" placeholder="Nome e Cognome" />
+      </div>
+      <div>
+        <label for="newPlayerRole">Ruolo</label>
+        <select id="newPlayerRole"></select>
+      </div>
+      <div>
+        <label>Foto (opzionale)</label>
+        <div class="photo-pick">
+          <img id="newPlayerAvatar" class="player-photo" src="placeholder.png" alt="Anteprima foto">
+          <label class="btn small" style="margin:0;cursor:pointer;">
+            Scegli
+            <input type="file" id="newPlayerPhoto" accept="image/*" hidden>
+          </label>
+          <button class="btn small" id="clearNewPlayerPhotoBtn" type="button">Rimuovi</button>
+        </div>
+        <div class="muted" style="margin-top:6px;">Se non carichi una foto, userà quella di default.</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="addPlayerBtn">Aggiungi</button>
+      <button class="btn danger" id="resetRosterBtn">Ripristina 13 nomi</button>
+    </div>
+
+    <div class="sp8"></div>
+    <div id="rosterList" class="list"></div>
+  </section>
+
+  <!-- PARTITE -->
+  <section id="tab-partite" class="card hidden">
+    <h2>Partite</h2>
+    <div class="grid">
+      <div class="card" style="box-shadow:none;">
+        <h2>Inserisci partita</h2>
+
+        <div class="row">
+          <div>
+            <label for="matchDate">Data</label>
+            <input id="matchDate" type="date" />
+          </div>
+          <div>
+            <label for="opponent">Avversario</label>
+            <input id="opponent" type="text" placeholder="Es. ASD Rivali" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="captainSelect">Capitano</label>
+            <select id="captainSelect"></select>
+          </div>
+          <div>
+            <label for="viceSelect">Vice capitano</label>
+            <select id="viceSelect"></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div><label for="t1">Tempo 1</label><input id="t1" placeholder="es. 1-0" /></div>
+          <div><label for="t2">Tempo 2</label><input id="t2" placeholder="es. 1-1" /></div>
+        </div>
+        <div class="row">
+          <div><label for="t3">Tempo 3</label><input id="t3" placeholder="es. 2-1" /></div>
+          <div><label for="t4">Tempo 4</label><input id="t4" placeholder="es. 2-2" /></div>
+        </div>
+
+        <label for="matchNotes">Note</label>
+        <textarea id="matchNotes" placeholder="Gol, cambi, ammonizioni..."></textarea>
+
+        <div class="actions">
+          <button class="btn primary" id="saveMatchBtn">Salva partita</button>
+          <button class="btn" id="resetMatchBtn">Pulisci</button>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Storico partite</h2>
+        <p class="muted center" style="margin:0 0 10px;">Le partite salvate compaiono qui.</p>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Avv.</th>
+                <th>Cap.</th>
+                <th>Vice</th>
+                <th>Tempi</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="matchesTbody"></tbody>
+          </table>
+        </div>
+        <p id="noMatches" class="muted hidden" style="margin:10px 0 0;">Nessuna partita salvata.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPORT -->
+  <section id="tab-report" class="card hidden">
+    <h2>Report</h2>
+    <p class="muted center" style="margin:0 0 10px;">Scrivi un nome e vedi tutti i dati inseriti (presenze + partite + ruolo).</p>
+    <div class="card" style="box-shadow:none; margin-bottom:12px;">
+      <h2>Report mensile</h2>
+      <div class="row">
+        <div>
+          <label for="monthlyReportMonth">Mese</label>
+          <input id="monthlyReportMonth" type="month" />
+        </div>
+        <div style="width:200px;">
+          <label>&nbsp;</label>
+          <button class="btn" id="printMonthlyPdfBtn" style="width:100%;">Stampa PDF</button>
+        </div>
+      </div>
+      <div class="sp8"></div>
+      <div id="monthlyReportArea"></div>
+    </div>
+
+
+    <div class="row">
+      <div>
+        <label for="playerSearch">Cerca giocatore</label>
+        <input id="playerSearch" list="playerList" placeholder="Inizia a scrivere il nome..." />
+        <datalist id="playerList"></datalist>
+      </div>
+      <div>
+        <label for="reportMode">Report generale</label>
+        <select id="reportMode">
+          <option value="presenze">Presenze</option>
+          <option value="partite">Partite</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row" id="reportMonthWrap">
+      <div>
+        <label for="reportMonth">Filtro mese (report presenze)</label>
+        <select id="reportMonth"></select>
+      </div>
+      <div class="center">
+        <label>&nbsp;</label>
+        <button class="btn" id="clearPlayerSearchBtn">Pulisci ricerca</button>
+      </div>
+    </div>
+
+    <div class="sp8"></div>
+    <div id="playerReport" class="hidden"></div>
+
+    <div class="sp8"></div>
+    <div id="reportContent"></div>
+  </section>
+
+  <!-- TATTICHE -->
+  <section id="tab-tattiche" class="card hidden">
+    <h2>Tattiche</h2>
+    <p class="muted center" style="margin:0 0 10px;">Lavagna libera: disegna/cancella. Puoi anche schierare i giocatori (non si salva nulla).</p>
+
+    <div class="tactics-wrap">
+      <div class="center" id="tacticsBoard">
+        <canvas id="tacticsCanvas" width="520" height="760"></canvas>
+        <div class="sp8"></div>
+        <div class="toolrow">
+          <button class="btn small active" id="toolDraw">Penna</button>
+          <button class="btn small" id="toolErase">Gomma</button>
+          <button class="btn small" id="toolMove">Sposta</button>
+          <button class="btn small" id="toolText">Scrivi</button>
+          <button class="btn small" id="toolDelete">Elimina</button>
+          <button class="btn small danger" id="toolClear">Pulisci tutto</button>
+          <button class="btn small" id="tacticsFullscreenBtn">Schermo intero</button>
+        </div>
+        <p class="muted center" style="margin:10px 0 0;">Suggerimento: tieni premuto sul campo per aprire lo schermo intero. In modalità <b>Elimina</b> tocchi un giocatore per rimuoverlo.</p>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2>Giocatori</h2>
+        <p class="muted center" style="margin:0 0 10px;">Tocca un nome e poi tocca il campo per piazzarlo.</p>
+        <div class="bench" id="bench"></div>
+        <div class="sp8"></div>
+        <div class="center">
+          <span class="badge" id="selectedToken">Selezionato: —</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Player modal -->
+<div class="modal-backdrop" id="playerModal" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="playerModalTitle">Giocatore</div>
+      <button class="btn small" id="playerModalClose" aria-label="Chiudi">Chiudi</button>
+    </div>
+    <div class="modal-body" id="playerModalBody"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
