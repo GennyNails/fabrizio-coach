@@ -1,6 +1,7 @@
 
-const APP_VERSION = "1.9";
-const STORE_KEY = "mister_soccer_v27";
+// Versione + chiave storage: cambiando chiave si parte da ZERO (nessun dato vecchio)
+const APP_VERSION = "2.0";
+const STORE_KEY = "mister_soccer_v28";
 
 const CATEGORIES = ["Primi Calci", "Piccoli Amici", "Pulcini 1° anno", "Pulcini 2° anno", "Pulcini Misti", "Esordienti 1° Anno", "Esordienti 2° Anno", "Esordienti Misti", "Giovanissimi (U14)", "Giovanissimi (U15)", "Allievi"];
 
@@ -175,6 +176,8 @@ const el = {
   tabPresenze: document.getElementById("tab-presenze"),
   tabRosa: document.getElementById("tab-rosa"),
   tabPartite: document.getElementById("tab-partite"),  tabTattiche: document.getElementById("tab-tattiche"),
+  // La pagina report non esiste più in questa versione, ma lasciamo una guardia per evitare crash.
+  tabReport: document.getElementById("tab-report"),
 
   // Presenze
   monthPick: document.getElementById("monthPick"),
@@ -254,8 +257,9 @@ function showTab(which) {
   el.tabPresenze.classList.toggle("hidden", which !== "presenze");
   el.tabRosa.classList.toggle("hidden", which !== "rosa");
   el.tabPartite.classList.toggle("hidden", which !== "partite");
-  el.tabReport.classList.toggle("hidden", which !== "report");
-  el.tabTattiche.classList.toggle("hidden", which !== "tattiche");  if (which === "tattiche") tacticsRenderAll();
+  if (el.tabReport) el.tabReport.classList.toggle("hidden", which !== "report");
+  el.tabTattiche.classList.toggle("hidden", which !== "tattiche");
+  if (which === "tattiche") tacticsRenderAll();
 }
 el.tabButtons.forEach(btn => btn.addEventListener("click", () => showTab(btn.dataset.tab)));
 
@@ -342,6 +346,11 @@ function renderAttendanceUI(){
       el.sessionPick.appendChild(opt);
       el.sessionPick.value = "";
     }else{
+      // placeholder visibile (utile su mobile)
+      const ph = document.createElement("option");
+      ph.value = "";
+      ph.textContent = "Seleziona giornata";
+      el.sessionPick.appendChild(ph);
       for(const d of dates){
         const opt = document.createElement("option");
         opt.value = d;
