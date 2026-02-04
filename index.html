@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#050c08" />
+  <title>Fabrizio Coach</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root{
+      --bg:#050c08;
+      --panel: rgba(12, 26, 18, .60);
+      --panel2: rgba(12, 26, 18, .35);
+      --border: rgba(255,255,255,.12);
+      --text:#d7ffe6;
+      --muted: rgba(215,255,230,.72);
+      --green:#8dffb3;
+      --green2:#4fe08b;
+      --danger:#ff6b6b;
+      --shadow: 0 10px 26px rgba(0,0,0,.35);
+      --r: 18px;
+      --r2: 22px;
+      --pad: 14px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1100px 700px at 20% -10%, rgba(79,224,139,.18), transparent 60%),
+                  radial-gradient(900px 600px at 110% 10%, rgba(141,255,179,.12), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+    }
+    header{
+      position: sticky;
+      top:0;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(5,12,8,.86), rgba(5,12,8,.58));
+      border-bottom: 1px solid var(--border);
+    }
+    .wrap{ max-width: 980px; margin:0 auto; padding: 10px 12px; }
+    .toprow{ display:flex; gap:10px; align-items:center; justify-content:space-between; }
+    .brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+    .logo{
+      width: 38px; height: 38px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(141,255,179,.25), rgba(79,224,139,.10));
+      border: 1px solid rgba(141,255,179,.25);
+      box-shadow: var(--shadow);
+      display:grid; place-items:center;
+      flex: 0 0 auto;
+    }
+    .logo span{ font-weight:900; color: var(--green); letter-spacing:.5px; }
+    .title{ min-width:0; }
+    .title h1{ margin:0; font-size: 15px; letter-spacing:.4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .title .sub{ font-size: 12px; color: var(--muted); margin-top: 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .pills{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+    .pill{ font-size: 12px; color: var(--muted); border:1px solid var(--border); background: rgba(12,26,18,.35); padding: 6px 10px; border-radius: 999px; }
+    .tabs{ display:flex; gap:8px; padding: 10px 12px 12px; overflow:auto; }
+    .tabbtn{
+      border:1px solid var(--border);
+      background: rgba(12,26,18,.35);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      min-width: max-content;
+    }
+    .tabbtn.active{
+      border-color: rgba(141,255,179,.35);
+      background: rgba(141,255,179,.12);
+      color: var(--green);
+    }
+
+    main{ max-width: 980px; margin: 0 auto; padding: 14px 12px 90px; }
+    .card{
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow);
+      padding: var(--pad);
+    }
+    .stack{ display:flex; flex-direction:column; gap:12px; }
+    h2{ margin:0 0 10px; font-size: 16px; letter-spacing:.3px; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    label{ font-size: 12px; color: var(--muted); }
+    .field{
+      display:flex; flex-direction:column; gap:6px;
+      min-width: 160px;
+      flex: 1 1 160px;
+    }
+    select, input[type="text"], input[type="date"]{
+      appearance:none;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 14px;
+      outline:none;
+    }
+    select option{ background:#07130c; color: var(--text); }
+    .btn{
+      border:1px solid rgba(141,255,179,.35);
+      background: rgba(141,255,179,.12);
+      color: var(--green);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+    .btn.secondary{
+      border-color: var(--border);
+      background: rgba(12,26,18,.35);
+      color: var(--text);
+    }
+    .btn.danger{
+      border-color: rgba(255,107,107,.35);
+      background: rgba(255,107,107,.10);
+      color: var(--danger);
+    }
+    .btn:active{ transform: translateY(1px); }
+    .list{ display:flex; flex-direction:column; gap:10px; }
+    .playerRow{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding: 10px 10px;
+      border-radius: 16px;
+      background: rgba(12,26,18,.35);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .left{ display:flex; align-items:center; gap:10px; min-width:0; }
+    .avatar{
+      width: 44px; height: 44px; border-radius: 999px;
+      border:1px solid rgba(141,255,179,.22);
+      background: rgba(0,0,0,.25);
+      object-fit: cover;
+      flex: 0 0 auto;
+    }
+    .name{ font-size: 14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .meta{ font-size: 12px; color: var(--muted); margin-top:2px; }
+    .chk{
+      width: 22px; height: 22px;
+      accent-color: var(--green2);
+    }
+    .stickySave{
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: linear-gradient(to top, rgba(5,12,8,.92), rgba(5,12,8,.65));
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      z-index: 30;
+    }
+    .stickySave .wrap{ max-width: 980px; margin:0 auto; display:flex; gap:10px; align-items:center; justify-content:space-between; }
+    .hint{ color: var(--muted); font-size: 12px; }
+    .hidden{ display:none !important; }
+
+    /* Tattiche */
+    .pitchWrap{
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      border-radius: var(--r2);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      background: #08160f;
+    }
+    .pitchImg{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit: cover;
+      opacity: .95;
+    }
+    .token{
+      position:absolute;
+      width: 54px; height: 54px;
+      border-radius: 999px;
+      border: 2px solid rgba(141,255,179,.55);
+      background: rgba(5,12,8,.75);
+      color: var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 800;
+      box-shadow: 0 10px 20px rgba(0,0,0,.35);
+      touch-action: none;
+      user-select:none;
+    }
+    .bench{ display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{
+      border:1px solid var(--border);
+      background: rgba(12,26,18,.35);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+
+    /* Modal */
+    dialog{
+      border:none;
+      border-radius: 22px;
+      width: min(560px, calc(100vw - 24px));
+      background: rgba(7,19,12,.92);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      padding: 0;
+    }
+    dialog::backdrop{ background: rgba(0,0,0,.55); backdrop-filter: blur(3px); }
+    .modalHead{ padding: 12px 14px; border-bottom: 1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .modalBody{ padding: 14px; }
+    .modalActions{ padding: 12px 14px; border-top: 1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; }
+    .closeX{ border:1px solid var(--border); background: rgba(12,26,18,.35); color: var(--text); border-radius: 12px; padding: 8px 10px; }
+
+    /* Print */
+    @media print{
+      header, .tabs, .stickySave, #tab-rosa, #tab-partite, #tab-tattiche { display:none !important; }
+      body{ background:#fff !important; color:#000 !important; }
+      main{ padding:0 !important; }
+      .card{ box-shadow:none !important; border:none !important; background:#fff !important; }
+      .playerRow{ border:1px solid #ddd !important; background:#fff !important; }
+      .name, .meta, label, .hint, h2, h3, p{ color:#000 !important; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="toprow">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><span>FC</span></div>
+        <div class="title">
+          <h1>Fabrizio Coach</h1>
+          <div class="sub" id="coachSub">COACH</div>
+        </div>
+      </div>
+      <div class="pills">
+        <div class="pill" id="pillTeam">Rosa: 0</div>
+        <div class="pill" id="pillMonth">Presenze mese: 0</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tabbtn active" data-tab="presenze">Presenze</button>
+    <button class="tabbtn" data-tab="rosa">Rosa</button>
+    <button class="tabbtn" data-tab="partite">Partite</button>
+    <button class="tabbtn" data-tab="tattiche">Tattiche</button>
+  </div>
+</header>
+
+<main>
+  <section id="tab-presenze" class="card">
+    <h2>Presenze</h2>
+    <div class="row">
+      <div class="field">
+        <label>Anno</label>
+        <select id="selYear"></select>
+      </div>
+      <div class="field">
+        <label>Mese</label>
+        <select id="selMonth"></select>
+      </div>
+      <div class="field" style="min-width:220px">
+        <label>Giornata (Lun/Mer/Gio)</label>
+        <select id="selSession"></select>
+      </div>
+      <button class="btn secondary" id="btnPrintMonth" type="button">Stampa PDF mese</button>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="list" id="attendanceList"></div>
+    <div class="hint" id="attendanceHint">Seleziona anno, mese e giornata. Spunta i presenti e premi SALVA.</div>
+  </section>
+
+  <section id="tab-rosa" class="card hidden">
+    <div class="row" style="justify-content:space-between;">
+      <h2 style="margin:0;">Rosa</h2>
+      <button class="btn" id="btnAddPlayer" type="button">+ Aggiungi</button>
+    </div>
+    <div class="list" id="rosterList"></div>
+  </section>
+
+  <section id="tab-partite" class="card hidden">
+    <h2>Partite</h2>
+    <div class="hint">Se vuoi, qui possiamo aggiungere convocazioni e risultati.</div>
+  </section>
+
+  <section id="tab-tattiche" class="card hidden">
+    <div class="row" style="justify-content:space-between;">
+      <h2 style="margin:0;">Tattiche</h2>
+      <div class="row">
+        <button class="btn secondary" id="btnFullPitch" type="button">Schermo intero</button>
+        <button class="btn danger" id="btnClearPitch" type="button">Pulisci</button>
+      </div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="pitchWrap" id="pitchWrap">
+      <img class="pitchImg" src="pitch.png" alt="Campo da gioco" />
+      <div id="pitchTokens"></div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="hint">Tocca un giocatore per aggiungerlo al campo. Trascina per spostarlo. Doppio tap sul campo per schermo intero.</div>
+    <div style="height:10px"></div>
+    <div class="bench" id="bench"></div>
+  </section>
+</main>
+
+<div class="stickySave hidden" id="stickySave">
+  <div class="wrap">
+    <div class="hint" id="saveHint">Modifiche non salvate</div>
+    <button class="btn" id="btnSave" type="button">SALVA</button>
+  </div>
+</div>
+
+<!-- Player modal -->
+<dialog id="dlgPlayer">
+  <div class="modalHead">
+    <div id="dlgTitle" style="font-weight:900;">Giocatore</div>
+    <button class="closeX" id="dlgClose" type="button">Chiudi</button>
+  </div>
+  <div class="modalBody" id="dlgBody"></div>
+  <div class="modalActions">
+    <button class="btn danger" id="btnRemovePlayer" type="button">Rimuovi</button>
+    <button class="btn secondary" id="btnChangePhoto" type="button">Cambia foto</button>
+  </div>
+</dialog>
+
+<input id="filePhoto" type="file" accept="image/*" class="hidden" />
+<script src="app.js"></script>
+</body>
+</html>
