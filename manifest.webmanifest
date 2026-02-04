@@ -1,8 +1,0 @@
-{
-  "name": "Mister Soccer (v1.9)",
-  "short_name": "Mister Soccer",
-  "start_url": "./index.html?v=1.9",
-  "display": "standalone",
-  "background_color": "#050607",
-  "theme_color": "#050607"
-}
