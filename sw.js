@@ -1,4 +1,4 @@
-const CACHE_NAME = "gestione-squadra-v1.2.09";
+const CACHE_NAME = "gestione-squadra-v1.18";
 const ASSETS = [
   "./",
   "./index.html",
