@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Gestione Squadra</title>
+<link href="style.css?v=2.0.0" rel="stylesheet"/>
+<link href="manifest.webmanifest" rel="manifest"/>
+<meta content="#072015" name="theme-color"/>
+<link href="assets/icon-192.png" rel="apple-touch-icon"/>
+</head>
+<body>
+<div aria-hidden="true" class="bg"><div class="bg-honey"></div><div class="bg-glow"></div></div>
+<header class="top">
+<div class="brand">
+<img alt="Logo squadra" class="team-logo hidden" id="teamLogo"/>
+<div class="brand-text">
+<div class="brand-title" id="teamTitle">Gestione Squadra</div>
+    <div class="brand-sub" id="brandSub">v5.0</div>
+</div>
+</div>
+<button class="icon" id="btnSettings" title="Impostazioni" type="button">⚙️</button>
+</header>
+<!-- SOLO STAMPA: header PDF (mai visibile a schermo) -->
+<div class="print-header" id="printHeader">
+<div class="print-left">
+<img alt="Logo" class="print-logo" id="printLogo"/>
+</div>
+<div class="print-right">
+<div class="print-team" id="printTeam">—</div>
+<div class="print-meta" id="printMeta">—</div>
+<div class="print-meta" id="printContext">—</div>
+</div>
+</div>
+<main class="main">
+<!-- PRESENZE -->
+<section class="page" id="page-presenze">
+<div class="hero">
+<div class="hero-card">
+<div class="k">Prossimo allenamento</div>
+<div class="v" id="nextTraining">—</div>
+</div>
+<div class="hero-card">
+<div class="k">Prossima partita</div>
+<div class="v" id="nextMatch">—</div>
+</div>
+</div>
+<div class="card">
+<div class="card-head">
+<div>
+<div class="card-title">Presenze (Lun • Mer • Gio)</div>
+<div class="card-sub" id="monthTitle">—</div>
+</div>
+<div class="actions">
+<label class="inline">
+<span>Mese</span>
+<select id="monthSelect"></select>
+</label>
+<span class="muted" id="attDayLabel" style="margin-right:6px;">Giorno: —</span>
+<button class="btn ghost" id="btnAllPresent" type="button">Tutti presenti</button>
+<button class="btn ghost" id="btnClearDay" type="button">Pulisci giorno</button>
+<button class="btn ghost" id="btnPrintAttendance" type="button">Stampa PDF</button>
+</div>
+</div>
+<div class="card-body">
+<div class="table-wrap compact" id="attendanceTable"></div>
+<div class="summary-wrap" id="attendanceSummary"></div>
+</div>
+</div>
+</section>
+<!-- ROSA -->
+<section class="page hidden" id="page-rosa">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="card-title">Rosa</div>
+<div class="card-sub">Clicca sulla foto per aprire i dettagli (solo visualizzazione).</div>
+</div>
+<div class="actions">
+<button class="btn" id="btnAddPlayer" type="button">+ Aggiungi</button>
+<button class="btn ghost" id="btnPrintRoster" type="button">Stampa PDF</button>
+</div>
+</div>
+<div class="card-body">
+<div class="roster" id="rosterList"></div>
+</div>
+</div>
+</section>
+<!-- TATTICA: rimossa (ora la lavagna si apre a schermo intero con un pulsante dedicato) -->
+<!-- PARTITE -->
+<section class="page hidden" id="page-partite">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="card-title">Report partite</div>
+<div class="card-sub">Risultati per tempo + scelta Capitano e Vice.</div>
+</div>
+<div class="actions">
+<button class="btn ghost" id="btnPrintMatches" type="button">Stampa PDF</button>
+</div>
+</div>
+<div class="card-body">
+<div class="grid">
+<label class="field"><span>Data</span><input id="mDate" type="date"/></label>
+<label class="field"><span>Avversario</span><input id="mOpponent" placeholder="Es. Tigers" type="text"/></label>
+<label class="field"><span>1° tempo</span><input id="mQ1" type="text"/></label>
+<label class="field"><span>2° tempo</span><input id="mQ2" type="text"/></label>
+<label class="field"><span>3° tempo</span><input id="mQ3" type="text"/></label>
+<label class="field"><span>4° tempo</span><input id="mQ4" type="text"/></label>
+<label class="field"><span>Capitano</span><select id="mCaptain"></select></label>
+<label class="field"><span>Vice</span><select id="mVice"></select></label>
+<div class="grid-actions">
+<button class="btn" id="btnAddMatch" type="button">Salva partita</button>
+<button class="btn ghost" id="btnClearMatchForm" type="button">Pulisci</button>
+</div>
+</div>
+<div class="list" id="matchesList"></div>
+</div>
+</div>
+</section>
+</main>
+<nav class="nav">
+<button class="nav-item active" data-tab="presenze" type="button"><span class="ni-ico">🏃</span><span class="ni-txt">Presenze</span></button>
+<button class="nav-item" data-tab="rosa" type="button"><span class="ni-ico">👥</span><span class="ni-txt">Rosa</span></button>
+<button class="nav-item" data-tab="partite" type="button"><span class="ni-ico">⚽</span><span class="ni-txt">Partite</span></button>
+<button class="nav-item" id="btnOpenBoard" type="button"><span class="ni-ico">📝</span><span class="ni-txt">Lavagna</span></button>
+</nav>
+
+<!-- LAVAGNA FULLSCREEN (PC + MOBILE) -->
+<div class="board-overlay hidden" id="boardOverlay" aria-hidden="true">
+  <div class="board-full-layout board-pure">
+    <section class="board-stage">
+      <div class="pitch" id="pitch">
+          <div class="tokens" id="tokens"></div>
+          <canvas id="ink"></canvas>
+          <div class="board-toolbar">
+            <button class="btn ghost" id="btnBoardClose" type="button">Esci</button>
+            <button class="btn" id="btnPen" type="button">Penna</button>
+            <button class="btn ghost" id="btnEraser" type="button">Gomma</button>
+            <button class="btn ghost" id="btnClearBoard" type="button">Pulisci</button>
+          </div>
+      </div>
+</section>
+  </div>
+</div>
+<!-- MODAL: Aggiungi giocatore -->
+<div class="modal hidden" id="modalPlayer">
+<div class="modal-card">
+<div class="modal-title">Aggiungi giocatore</div>
+<label class="field"><span>Nome e Cognome</span><input id="pName" placeholder="Es. Mario Rossi" type="text"/></label>
+<label class="field"><span>Foto (opzionale)</span><input accept="image/*" id="pPhoto" type="file"/></label>
+<div class="modal-actions">
+<button class="btn" id="btnPlayerSave" type="button">Salva</button>
+<button class="btn ghost" id="btnPlayerCancel" type="button">Annulla</button>
+</div>
+</div>
+</div>
+<!-- MODAL: Dettagli giocatore -->
+<div class="modal hidden" id="modalDetails">
+<div class="modal-card">
+<div class="modal-title">Dettagli giocatore</div>
+<div class="detail-top">
+<div class="detail-avatar-lg" id="dAvatar"></div>
+<div>
+<div class="detail-name" id="dName">—</div>
+<div class="detail-sub" id="dId">—</div>
+</div>
+</div>
+<div class="detail-grid" style="margin-top:12px">
+<div class="detail-item">
+<div class="detail-label">Ruolo</div>
+<div class="detail-value" id="dRole">—</div>
+</div>
+<div class="detail-item">
+<div class="detail-label">Numero maglia</div>
+<div class="detail-value" id="dNumber">—</div>
+</div>
+</div>
+<div class="modal-actions">
+<button class="btn ghost" id="btnDetailsClose" type="button">Chiudi</button>
+</div>
+</div>
+</div>
+<!-- MODAL: Impostazioni -->
+<div class="modal hidden" id="modalSettings">
+<div class="modal-card">
+<div class="modal-title">Impostazioni</div>
+<label class="field"><span>Nome squadra</span><input id="sTeam" placeholder="Es. Wildcats" type="text"/></label>
+<label class="field"><span>Categoria</span><select id="sCategory"></select></label>
+<label class="field"><span>Nome e Cognome Mister</span><input id="sMister" placeholder="Es. Luca Bianchi" type="text"/></label>
+<label class="field"><span>Logo squadra (opzionale)</span><input accept="image/*" id="sLogo" type="file"/></label>
+<label class="field"><span>Versione</span><input id="sVersion" placeholder="1.35" type="text"/></label>
+
+<div class="divider"></div>
+<div class="modal-subtitle">Dati online (opzionale)</div>
+<div class="hint" style="margin-top:6px">Per avere i dati sempre online serve un backend. Qui puoi collegare Supabase (consigliato) e sincronizzare automaticamente.</div>
+<label class="field"><span>Supabase URL</span><input id="cUrl" placeholder="https://xxxx.supabase.co" type="text"/></label>
+<label class="field"><span>Supabase ANON key</span><input id="cKey" placeholder="eyJ..." type="password"/></label>
+<label class="field"><span>Team ID</span><input id="cTeam" placeholder="calcio-cordignano" type="text"/></label>
+<div class="row" style="gap:10px; margin-top:10px; flex-wrap:wrap">
+  <button class="btn" id="btnCloudSave" type="button">Salva cloud</button>
+  <button class="btn ghost" id="btnCloudUpload" type="button">Carica online</button>
+  <button class="btn ghost" id="btnCloudDownload" type="button">Scarica online</button>
+</div>
+<div class="hint" id="cloudStatus" style="margin-top:8px">Offline (solo locale)</div>
+<div class="modal-actions">
+<button class="btn" id="btnSettingsSave" type="button">Salva</button>
+<button class="btn ghost" id="btnSettingsCancel" type="button">Chiudi</button>
+</div>
+</div>
+</div>
+<script src="app.js?v=2.0.0"></script>
+<script>
+    if("serviceWorker" in navigator){
+      window.addEventListener("load", ()=>{
+        navigator.serviceWorker.register("./sw.js").catch(()=>{});
+      });
+    }
+  </script>
+</body>
+</html>
